@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>Wrap It or Wreck It — Highlight Industries</title>
-  <meta name="description" content="A quick interactive game that shows why safe pallet wrapping matters in transit." />
+  <title>Shipment Lockdown — Secure it here… or regret it there.</title>
+  <meta name="description" content="A quick interactive game that shows why safe pallet securement matters in transit." />
   <style>
     :root{
       --hi:#3F845B;
@@ -34,7 +34,6 @@
       font-family:var(--sans);
       overflow-x:hidden;
     }
-    a{color:inherit}
     .wrap{
       max-width:1100px;
       margin:0 auto;
@@ -57,7 +56,7 @@
     }
     .brand{
       display:flex; gap:12px; align-items:center;
-      min-width: 220px;
+      min-width: 260px;
     }
     .dot{
       width:40px; height:40px;
@@ -76,9 +75,7 @@
       animation: spin 6s linear infinite;
     }
     @keyframes spin{to{transform:rotate(360deg)}}
-    .brand h1{
-      font-size:15px; margin:0; letter-spacing:.4px;
-    }
+    .brand h1{font-size:15px; margin:0; letter-spacing:.4px}
     .brand p{margin:2px 0 0; color:var(--muted); font-size:12px}
     .controls{
       display:flex; gap:10px; align-items:center; flex-wrap:wrap; justify-content:flex-end;
@@ -147,70 +144,143 @@
       grid-template-columns: 1fr;
       gap:14px;
     }
+
+    /* trailer vibe */
     .scene{
       border:1px solid var(--line);
       border-radius:var(--radius2);
       background:
         radial-gradient(900px 420px at 10% 0%, rgba(63,132,91,.20), transparent 55%),
         linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.01));
-      height: 380px;
+      height: 400px;
       position:relative;
       overflow:hidden;
     }
     .scene .hint{
       position:absolute;
       left:14px; top:14px;
-      color:rgba(233,243,238,.85);
+      color:rgba(233,243,238,.88);
       font-size:12px;
-      background: rgba(0,0,0,.25);
+      background: rgba(0,0,0,.28);
       border:1px solid rgba(255,255,255,.10);
       padding:8px 10px;
       border-radius:999px;
       backdrop-filter: blur(8px);
+      z-index:5;
     }
-    .road{
-      position:absolute; left:-20%; right:-20%; bottom:-10%;
-      height: 45%;
-      background: linear-gradient(180deg, rgba(0,0,0,0), rgba(0,0,0,.35)),
-                  repeating-linear-gradient(90deg, rgba(255,255,255,.08) 0 18px, rgba(255,255,255,0) 18px 54px);
-      transform: perspective(700px) rotateX(68deg);
-      opacity:.45;
+    .scene .legend{
+      position:absolute;
+      right:14px; top:14px;
+      font-family:var(--mono);
+      font-size:11px;
+      color:rgba(233,243,238,.72);
+      background: rgba(0,0,0,.28);
+      border:1px solid rgba(255,255,255,.10);
+      padding:8px 10px;
+      border-radius:999px;
+      backdrop-filter: blur(8px);
+      z-index:5;
     }
-    .truck{
+    .trailer{
       position:absolute;
       left: 50%;
-      top: 46%;
+      top: 52%;
       transform: translate(-50%,-50%);
-      width: 78%;
-      max-width: 650px;
-      height: 210px;
-      border-radius: 24px;
-      border:1px solid rgba(255,255,255,.14);
-      background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.02));
+      width: 92%;
+      max-width: 860px;
+      height: 270px;
+      border-radius: 26px;
+      border:1px solid rgba(255,255,255,.16);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.02));
       box-shadow: 0 30px 80px rgba(0,0,0,.55);
       overflow:hidden;
     }
-    .truck .label{
+    /* subtle "cab hint" on left to read as truck */
+    .cabHint{
+      position:absolute;
+      left:-54px;
+      top:34px;
+      width:110px;
+      height:120px;
+      border-radius:28px;
+      background:
+        radial-gradient(circle at 30% 30%, rgba(255,255,255,.12), transparent 55%),
+        linear-gradient(180deg, rgba(63,132,91,.28), rgba(0,0,0,.22));
+      border:1px solid rgba(255,255,255,.14);
+      filter: blur(.2px);
+      opacity:.9;
+    }
+    .cabHint:after{
+      content:"";
+      position:absolute;
+      left:18px; top:30px;
+      width:48px; height:28px;
+      border-radius:10px;
+      border:1px solid rgba(255,255,255,.18);
+      background: rgba(255,255,255,.06);
+    }
+    .trailer .label{
       position:absolute; left:16px; top:14px;
       font-family: var(--mono);
       font-size:12px;
-      color: rgba(233,243,238,.75);
+      color: rgba(233,243,238,.80);
+      z-index:3;
     }
-    .truck .bed{
-      position:absolute; left:14px; right:14px; top:44px; bottom:14px;
+    /* wall ribs */
+    .ribs{
+      position:absolute; inset:0;
+      background:
+        repeating-linear-gradient(90deg,
+          rgba(255,255,255,.06) 0 2px,
+          rgba(255,255,255,0) 2px 44px);
+      opacity:.35;
+      pointer-events:none;
+    }
+    /* floor planks */
+    .floor{
+      position:absolute;
+      left:12px; right:12px; bottom:12px;
+      height: 56%;
       border-radius:18px;
       border:1px solid rgba(255,255,255,.12);
-      background: linear-gradient(180deg, rgba(0,0,0,.25), rgba(0,0,0,.05));
+      background:
+        linear-gradient(180deg, rgba(0,0,0,.28), rgba(0,0,0,.06)),
+        repeating-linear-gradient(90deg, rgba(255,255,255,.06) 0 18px, rgba(255,255,255,0) 18px 36px);
       display:flex;
       gap:14px;
       padding:14px;
       align-items:flex-end;
       justify-content:center;
+      z-index:2;
     }
+    /* rear door hint */
+    .doors{
+      position:absolute;
+      right:10px;
+      top:48px;
+      width:90px;
+      height:165px;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.10);
+      opacity:.55;
+      z-index:1;
+    }
+    .doors:before, .doors:after{
+      content:"";
+      position:absolute;
+      top:10px; bottom:10px;
+      width:2px;
+      background: rgba(255,255,255,.10);
+    }
+    .doors:before{left:44px}
+    .doors:after{left:46px}
+
     .pallet{
-      width: 30%;
+      width: 28%;
       height: 100%;
-      max-width: 160px;
+      max-width: 170px;
       min-width: 120px;
       position:relative;
       transform-origin: 50% 95%;
@@ -275,6 +345,43 @@
       mix-blend-mode: screen;
     }
 
+    .meter{
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:12px;
+      background: rgba(0,0,0,.18);
+    }
+    .meterTop{display:flex; justify-content:space-between; align-items:center; gap:12px}
+    .meterTop .big{font-size:22px; font-weight:900; letter-spacing:.4px}
+    .meterTop .big small{font-size:12px; color:var(--muted); font-weight:700}
+    .bar{
+      margin-top:10px;
+      height:12px;
+      background: rgba(255,255,255,.06);
+      border-radius:999px;
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,.10);
+    }
+    .fill{
+      height:100%;
+      width:0%;
+      background: linear-gradient(90deg, rgba(255,90,106,.9), rgba(255,204,102,.95), rgba(110,231,183,.95));
+      transition: width .25s ease;
+    }
+    .log{
+      border:1px solid var(--line);
+      border-radius:16px;
+      background: rgba(0,0,0,.18);
+      padding:12px;
+      min-height:118px;
+      font-family: var(--mono);
+      font-size:11px;
+      line-height:1.45;
+      color: rgba(233,243,238,.86);
+      overflow:auto;
+    }
+    .log .muted{color: rgba(182,200,191,.75)}
+
     /* right: settings */
     .row{display:flex; align-items:center; justify-content:space-between; gap:10px; margin:10px 0}
     .row label{font-weight:700; font-size:13px}
@@ -303,44 +410,6 @@
       background: linear-gradient(135deg, rgba(63,132,91,.85), rgba(63,132,91,.35));
       border-color: rgba(110,231,183,.28);
     }
-
-    .meter{
-      border:1px solid var(--line);
-      border-radius:16px;
-      padding:12px;
-      background: rgba(0,0,0,.18);
-    }
-    .meterTop{display:flex; justify-content:space-between; align-items:center; gap:12px}
-    .meterTop .big{font-size:22px; font-weight:900; letter-spacing:.4px}
-    .meterTop .big small{font-size:12px; color:var(--muted); font-weight:700}
-    .bar{
-      margin-top:10px;
-      height:12px;
-      background: rgba(255,255,255,.06);
-      border-radius:999px;
-      overflow:hidden;
-      border:1px solid rgba(255,255,255,.10);
-    }
-    .fill{
-      height:100%;
-      width:0%;
-      background: linear-gradient(90deg, rgba(255,90,106,.9), rgba(255,204,102,.95), rgba(110,231,183,.95));
-      transition: width .25s ease;
-    }
-
-    .log{
-      border:1px solid var(--line);
-      border-radius:16px;
-      background: rgba(0,0,0,.18);
-      padding:12px;
-      min-height:118px;
-      font-family: var(--mono);
-      font-size:11px;
-      line-height:1.45;
-      color: rgba(233,243,238,.86);
-      overflow:auto;
-    }
-    .log .muted{color: rgba(182,200,191,.75)}
 
     /* modal */
     .modalBack{
@@ -410,9 +479,7 @@
       margin-top:12px;
       display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end;
     }
-    .pulse{
-      animation: pulse .8s ease-in-out infinite alternate;
-    }
+    .pulse{animation: pulse .8s ease-in-out infinite alternate}
     @keyframes pulse{
       from{filter: drop-shadow(0 0 0 rgba(110,231,183,.0))}
       to{filter: drop-shadow(0 0 18px rgba(110,231,183,.28))}
@@ -425,8 +492,8 @@
       <div class="brand">
         <div class="dot" aria-hidden="true"></div>
         <div>
-          <h1>Wrap It or Wreck It</h1>
-          <p>Containment is a strategy. Not a vibe.</p>
+          <h1>Shipment Lockdown</h1>
+          <p>Secure it here… or regret it there.</p>
         </div>
       </div>
 
@@ -444,17 +511,23 @@
       <section class="card">
         <div class="hd">
           <div>
-            <h2>Truck Simulator</h2>
-            <p id="sceneSubtitle">Pick a wrap setup, then test it against real transit chaos (bumps, turns, braking).</p>
+            <h2>Trailer Simulator</h2>
+            <p id="sceneSubtitle">Pick a securement setup, then test it against transit chaos (bumps, turns, braking).</p>
           </div>
           <span class="tag" id="riskTag">RISK: —</span>
         </div>
         <div class="bd sim">
           <div class="scene" id="scene">
-            <div class="hint" id="hint">Choose settings → Run the Truck</div>
-            <div class="truck" id="truck">
-              <div class="label">TRAILER • Load Zone</div>
-              <div class="bed">
+            <div class="hint" id="hint">Step 1: choose settings → Step 2: Run the Truck</div>
+            <div class="legend">Goal: beat 85/100 containment</div>
+
+            <div class="trailer" id="trailer">
+              <div class="cabHint" aria-hidden="true"></div>
+              <div class="label">TRAILER • Cargo Bay</div>
+              <div class="doors" aria-hidden="true"></div>
+              <div class="ribs" aria-hidden="true"></div>
+
+              <div class="floor" id="floor">
                 <div class="pallet" id="p1">
                   <div class="stack"></div>
                   <div class="wrapband b1"></div><div class="wrapband b2"></div><div class="wrapband b3"></div><div class="wrapband b4"></div><div class="wrapband b5"></div>
@@ -464,6 +537,7 @@
                   <div class="cracks"></div>
                   <div class="base"></div>
                 </div>
+
                 <div class="pallet" id="p2">
                   <div class="stack"></div>
                   <div class="wrapband b1"></div><div class="wrapband b2"></div><div class="wrapband b3"></div><div class="wrapband b4"></div><div class="wrapband b5"></div>
@@ -473,6 +547,7 @@
                   <div class="cracks"></div>
                   <div class="base"></div>
                 </div>
+
                 <div class="pallet" id="p3">
                   <div class="stack"></div>
                   <div class="wrapband b1"></div><div class="wrapband b2"></div><div class="wrapband b3"></div><div class="wrapband b4"></div><div class="wrapband b5"></div>
@@ -484,7 +559,6 @@
                 </div>
               </div>
             </div>
-            <div class="road"></div>
           </div>
 
           <div class="meter">
@@ -505,7 +579,7 @@
       <aside class="card">
         <div class="hd">
           <div>
-            <h2>Wrap Setup</h2>
+            <h2>Securement Setup</h2>
             <p>Make choices like you’re on the dock and that truck is leaving in 60 seconds.</p>
           </div>
         </div>
@@ -513,7 +587,7 @@
           <div class="row">
             <div>
               <label>Film gauge</label>
-              <div class="sub">Thicker film helps, but bad technique still loses.</div>
+              <div class="sub">Thicker helps… but technique still wins.</div>
             </div>
             <div class="pill" id="filmChoices"></div>
           </div>
@@ -521,7 +595,7 @@
           <div class="row">
             <div>
               <label>Pre-stretch</label>
-              <div class="sub">Higher pre-stretch can reduce waste and improve consistency.</div>
+              <div class="sub">Higher pre-stretch can reduce waste + improve consistency.</div>
             </div>
             <div class="pill" id="stretchChoices"></div>
           </div>
@@ -529,7 +603,7 @@
           <div class="row">
             <div>
               <label>Wrap pattern</label>
-              <div class="sub">Banded loads resist shifting; full coverage resists scuff/crush.</div>
+              <div class="sub">Banded resists shifting; full coverage helps scuff/crush.</div>
             </div>
             <div class="pill" id="patternChoices"></div>
           </div>
@@ -537,7 +611,7 @@
           <div class="row">
             <div>
               <label>Bottom revolutions</label>
-              <div class="sub">Where loads fail first: start tight at the base.</div>
+              <div class="sub">Where loads fail first: lock it at the base.</div>
             </div>
             <div class="pill" id="baseChoices"></div>
           </div>
@@ -545,7 +619,7 @@
           <div class="row">
             <div>
               <label>Top security</label>
-              <div class="sub">Top sheet + corner protection reduces crush + moisture risk.</div>
+              <div class="sub">Top sheet + corners reduce crush + moisture risk.</div>
             </div>
             <div class="pill" id="topChoices"></div>
           </div>
@@ -566,7 +640,7 @@
           </div>
 
           <p class="tiny" style="margin-top:12px">
-            Tip: On a kiosk, hit <b>Kiosk</b> + <b>Run the Truck</b>, then let people try to beat the containment score.
+            Tip: On a kiosk, hit <b>Kiosk</b> + <b>Run the Truck</b>, then let people try to beat the score.
           </p>
         </div>
       </aside>
@@ -591,9 +665,7 @@
           <div class="kpi"><div class="v" id="kpiCost">—</div><div class="t">“Cheap wrap” cost</div></div>
         </div>
 
-        <div class="callout" id="callout">
-          —
-        </div>
+        <div class="callout" id="callout">—</div>
 
         <div class="qrBox" id="qrBox" style="display:none">
           <canvas id="qr" width="164" height="164" aria-label="QR code"></canvas>
@@ -616,13 +688,6 @@
   </div>
 
 <script>
-/* ----------------------------
-   Wrap It or Wreck It (single-file)
-   - no external libraries
-   - QR code generator included (simple QR v1-ish with error correction-ish vibe)
-   Note: QR here is a lightweight implementation good enough for trade show URLs.
------------------------------ */
-
 const $ = (id) => document.getElementById(id);
 const logEl = $("log");
 
@@ -633,12 +698,22 @@ const state = {
   kiosk: false,
   chaos: "normal",
   settings: {
-    film: "standard",      // light / standard / heavy
-    stretch: "mid",        // low / mid / high
-    pattern: "basic",      // basic / banded / full
-    baseRevs: "2",         // 1 / 2 / 3 / 4
-    top: "none"            // none / topsheet / corners / both
+    film: "standard",
+    stretch: "mid",
+    pattern: "basic",
+    baseRevs: "2",
+    top: "none"
   }
+};
+
+// FIX: mapping so IDs always match
+const containers = {
+  film: "filmChoices",
+  stretch: "stretchChoices",
+  pattern: "patternChoices",
+  baseRevs: "baseChoices",
+  top: "topChoices",
+  chaos: "chaosChoices"
 };
 
 const choices = {
@@ -677,11 +752,10 @@ const choices = {
   ]
 };
 
-// Level modifiers: what the load is like
 const levels = {
-  1: { name:"The “Looks Fine to Me” Load", fragility: 1.05, valueRange:[1200, 3800], subtitle:"Lightweight boxes + sloppy wrap = surprise claims." },
-  2: { name:"The “We’re Behind Schedule” Load", fragility: 1.20, valueRange:[2200, 6200], subtitle:"Time pressure: can you wrap fast AND secure?" },
-  3: { name:"The High-Performance Load", fragility: 1.35, valueRange:[3500, 9800], subtitle:"Tall load, higher center of gravity. Containment matters." }
+  1: { name:"The “Looks Fine to Me” Shipment", fragility: 1.05, valueRange:[1200, 3800], subtitle:"Light boxes + sloppy securement = surprise claims." },
+  2: { name:"The “We’re Behind Schedule” Shipment", fragility: 1.20, valueRange:[2200, 6200], subtitle:"Time pressure: can you secure fast AND stable?" },
+  3: { name:"The High-Performance Shipment", fragility: 1.35, valueRange:[3500, 9800], subtitle:"Tall shipment, higher center of gravity. Containment matters." }
 };
 
 function addLog(line, tone=""){
@@ -690,12 +764,11 @@ function addLog(line, tone=""){
   logEl.appendChild(div);
   logEl.scrollTop = logEl.scrollHeight;
 }
-
 function clamp(n,min,max){ return Math.max(min, Math.min(max,n)); }
 function rnd(min,max){ return Math.random()*(max-min)+min; }
 
-function buildChoices(containerId, groupKey, onChange){
-  const el = $(containerId);
+function buildChoices(groupKey, onChange){
+  const el = $(containers[groupKey]);
   el.innerHTML = "";
   choices[groupKey].forEach(opt=>{
     const b = document.createElement("div");
@@ -712,21 +785,20 @@ function buildChoices(containerId, groupKey, onChange){
 }
 
 function setActive(groupKey, key){
-  const container = $(groupKey+"Choices");
+  const container = $(containers[groupKey]);
   [...container.children].forEach(ch=>{
     ch.classList.toggle("active", ch.dataset.key===key);
   });
 }
 
 function initUI(){
-  buildChoices("filmChoices","film", (k)=> state.settings.film = k);
-  buildChoices("stretchChoices","stretch", (k)=> state.settings.stretch = k);
-  buildChoices("patternChoices","pattern", (k)=> state.settings.pattern = k);
-  buildChoices("baseChoices","baseRevs", (k)=> state.settings.baseRevs = k);
-  buildChoices("topChoices","top", (k)=> state.settings.top = k);
-  buildChoices("chaosChoices","chaos", (k)=> state.chaos = k);
+  buildChoices("film",    (k)=> state.settings.film = k);
+  buildChoices("stretch", (k)=> state.settings.stretch = k);
+  buildChoices("pattern", (k)=> state.settings.pattern = k);
+  buildChoices("baseRevs",(k)=> state.settings.baseRevs = k);
+  buildChoices("top",     (k)=> state.settings.top = k);
+  buildChoices("chaos",   (k)=> state.chaos = k);
 
-  // Defaults
   setActive("film", state.settings.film);
   setActive("stretch", state.settings.stretch);
   setActive("pattern", state.settings.pattern);
@@ -758,13 +830,12 @@ function initUI(){
 function toggleKiosk(){
   state.kiosk = !state.kiosk;
   document.body.style.fontSize = state.kiosk ? "18px" : "";
-  // make buttons a bit bigger
   document.querySelectorAll(".btn").forEach(b=>{
     b.style.padding = state.kiosk ? "14px 16px" : "";
     b.style.borderRadius = state.kiosk ? "16px" : "";
   });
   addLog(state.kiosk ? "Kiosk mode: ON (big UI)" : "Kiosk mode: OFF", "muted");
-  // Try request fullscreen
+
   if(state.kiosk && document.documentElement.requestFullscreen){
     document.documentElement.requestFullscreen().catch(()=>{});
   }
@@ -775,12 +846,14 @@ function resetAll(){
   state.level = 1;
   state.chaos = "normal";
   state.settings = { film:"standard", stretch:"mid", pattern:"basic", baseRevs:"2", top:"none" };
+
   setActive("film", state.settings.film);
   setActive("stretch", state.settings.stretch);
   setActive("pattern", state.settings.pattern);
   setActive("baseRevs", state.settings.baseRevs);
   setActive("top", state.settings.top);
   setActive("chaos", state.chaos);
+
   clearPalletEffects();
   logEl.innerHTML = `<div class="muted">System log: reset.</div>`;
   refresh();
@@ -789,7 +862,7 @@ function resetAll(){
 function nextLevel(){
   if(state.running) return;
   state.level = Math.min(state.maxLevel, state.level + 1);
-  // Slightly nudge defaults to keep it fun
+
   if(state.level === 2){
     state.settings.pattern = "banded";
     state.settings.baseRevs = "3";
@@ -804,31 +877,32 @@ function nextLevel(){
   setActive("pattern", state.settings.pattern);
   setActive("baseRevs", state.settings.baseRevs);
   setActive("top", state.settings.top);
+
   refresh();
   addLog(`Level set → ${state.level}/${state.maxLevel}: ${levels[state.level].name}`, "muted");
 }
 
 function autoDemo(){
   if(state.running) return;
-  // A “good” setup that still can fail on Wild
   state.settings.film = "standard";
   state.settings.stretch = "high";
   state.settings.pattern = "banded";
   state.settings.baseRevs = "4";
   state.settings.top = "both";
   state.chaos = "spicy";
+
   setActive("film", state.settings.film);
   setActive("stretch", state.settings.stretch);
   setActive("pattern", state.settings.pattern);
   setActive("baseRevs", state.settings.baseRevs);
   setActive("top", state.settings.top);
   setActive("chaos", state.chaos);
+
   refresh();
   addLog("Auto Demo loaded. Ready to run.", "muted");
 }
 
 function computeContainmentScore(){
-  // base from choices
   const film = choices.film.find(x=>x.key===state.settings.film).score;
   const stretch = choices.stretch.find(x=>x.key===state.settings.stretch).score;
   const pattern = choices.pattern.find(x=>x.key===state.settings.pattern).score;
@@ -837,29 +911,24 @@ function computeContainmentScore(){
 
   let score = film + stretch + pattern + base + top;
 
-  // Technique synergy bonuses
   if(state.settings.pattern==="banded" && Number(state.settings.baseRevs)>=3) score += 6;
   if(state.settings.stretch==="high" && state.settings.film!=="light") score += 4;
   if(state.settings.top==="both") score += 4;
   if(state.settings.pattern==="full" && state.settings.top!=="none") score += 3;
 
-  // Penalties (classic fails)
   if(state.settings.baseRevs==="1") score -= 6;
   if(state.settings.stretch==="low" && state.settings.film==="light") score -= 8;
 
-  // Level difficulty (fragility)
   score = score / levels[state.level].fragility;
-
-  // Normalize to 0–100
   score = clamp(Math.round(score*2.2), 0, 100);
   return score;
 }
 
 function grade(score){
-  if(score >= 86) return {g:"A", risk:"LOW", color:"ok"};
-  if(score >= 72) return {g:"B", risk:"MED", color:"warn"};
-  if(score >= 58) return {g:"C", risk:"HIGH", color:"danger"};
-  return {g:"D", risk:"CRITICAL", color:"danger"};
+  if(score >= 86) return {g:"A", risk:"LOW"};
+  if(score >= 72) return {g:"B", risk:"MED"};
+  if(score >= 58) return {g:"C", risk:"HIGH"};
+  return {g:"D", risk:"CRITICAL"};
 }
 
 function refresh(){
@@ -875,11 +944,8 @@ function refresh(){
   $("gradeTag").textContent = `GRADE: ${gr.g}`;
   $("riskTag").textContent = `RISK: ${gr.risk}`;
 
-  // Visual wrap bands based on score and settings
   applyWrapVisuals(score);
-
-  // Hint
-  $("hint").textContent = state.running ? "Truck is rolling…" : "Choose settings → Run the Truck";
+  $("hint").textContent = state.running ? "Truck is rolling…" : "Step 1: choose settings → Step 2: Run the Truck";
 }
 
 function applyWrapVisuals(score){
@@ -889,12 +955,10 @@ function applyWrapVisuals(score){
     const corners = p.querySelector(".corners");
     const cracks = p.querySelector(".cracks");
 
-    // reset
     bands.forEach(b=> b.style.opacity = "0");
     corners.style.opacity = "0";
     cracks.style.opacity = "0";
 
-    // band count proxy: base revs + pattern
     let count = Number(state.settings.baseRevs);
     if(state.settings.pattern==="banded") count += 1;
     if(state.settings.pattern==="full") count += 1;
@@ -904,7 +968,6 @@ function applyWrapVisuals(score){
       bands[i].style.opacity = score >= 60 ? "0.85" : "0.55";
     }
 
-    // corners based on top selection
     if(state.settings.top==="corners" || state.settings.top==="both"){
       corners.style.opacity = score >= 70 ? "0.95" : "0.7";
     }
@@ -917,8 +980,7 @@ function clearPalletEffects(){
     p.style.transform = "none";
     p.querySelector(".cracks").style.opacity = "0";
   });
-  $("truck").style.transform = "translate(-50%,-50%)";
-  $("scene").style.filter = "";
+  $("trailer").style.transform = "translate(-50%,-50%)";
 }
 
 async function runTruck(){
@@ -933,42 +995,29 @@ async function runTruck(){
 
   addLog(`▶ Run start • score=${score} • chaos=${state.chaos} • level=${state.level}`, "muted");
 
-  // Simulate events (bumps, turns, braking)
   const events = makeEvents(state.chaos);
-  let stability = score / 100; // 0..1
+  let stability = score / 100;
   let damage = 0;
 
   for(const ev of events){
     addLog(`• Event: ${ev.name} (severity ${ev.sev.toFixed(2)})`);
     const hit = ev.sev * chaosMult * lvl.fragility;
-
-    // Stability reduces hit; poor setups amplify
     const effective = hit * (1.18 - stability);
-    damage += effective * 0.55; // accumulate risk/damage
+    damage += effective * 0.55;
 
-    // Shake visuals
     await shake(ev.type, ev.sev, stability);
 
-    // Stability degrades a bit each event, more if low score
     stability = clamp(stability - (0.06 + (0.18 - (score/600))) * (hit/1.3), 0, 1);
   }
 
-  // Convert damage to %
   let damagePct = clamp(Math.round(damage * 55), 0, 95);
-
-  // If score is very high, cap damage
   if(score >= 86) damagePct = Math.min(damagePct, 10);
   if(score >= 72) damagePct = Math.min(damagePct, 28);
 
-  // Compute outcomes
   const claimProb = clamp(Math.round(damagePct * (0.9 + rnd(-0.12,0.12))), 0, 92);
   const delayDays = damagePct < 12 ? 0 : (damagePct < 35 ? 1 : (damagePct < 60 ? 2 : 4));
   const value = Math.round(rnd(lvl.valueRange[0], lvl.valueRange[1]));
   const cheapWrapCost = Math.round(value * (damagePct/100) * (1.1 + rnd(-0.08,0.12)));
-
-  const gr = grade(score);
-  const title = outcomeTitle(gr, damagePct);
-  const sub = outcomeSub(score, damagePct, delayDays);
 
   addLog(`■ Result • damageRisk=${damagePct}% • claimProb=${claimProb}% • delay=${delayDays}d • estCost=$${cheapWrapCost}`, "muted");
 
@@ -976,14 +1025,14 @@ async function runTruck(){
   refresh();
 
   showResults({
-    title,
-    sub,
+    title: outcomeTitle(damagePct),
+    sub: outcomeSub(score, damagePct, delayDays),
     damagePct,
     claimProb,
     delayDays,
     cheapWrapCost,
     score,
-    grade: gr.g
+    grade: grade(score).g
   });
 }
 
@@ -1023,32 +1072,31 @@ function makeEvents(chaosKey){
   return out;
 }
 
-function outcomeTitle(gr, damagePct){
+function outcomeTitle(damagePct){
   if(damagePct <= 10) return "✅ Smooth Delivery";
   if(damagePct <= 30) return "⚠️ Minor Damage — Still a Problem";
   if(damagePct <= 55) return "❌ Freight Claim Incoming";
-  return "💥 Load Failure: Wrap It or Wreck It";
+  return "💥 Shipment Failure: Not Road-Ready";
 }
 
 function outcomeSub(score, damagePct, delayDays){
-  if(damagePct <= 10) return `Containment score ${score}/100. Customer receives product like you meant it.`;
-  if(damagePct <= 30) return `Containment score ${score}/100. You “saved wrap”… and bought rework + complaints.`;
+  if(damagePct <= 10) return `Containment score ${score}/100. Receiver gets it like you meant it.`;
+  if(damagePct <= 30) return `Containment score ${score}/100. Saved securement… bought rework + complaints.`;
   if(damagePct <= 55) return `Containment score ${score}/100. Expect photos from the receiver. Not the good kind.`;
   return `Containment score ${score}/100. Delay: ~${delayDays} days. This is the part that eats margins.`;
 }
 
 async function shake(type, severity, stability){
-  const truck = $("truck");
+  const trailer = $("trailer");
   const pallets = [$("p1"),$("p2"),$("p3")];
 
-  const base = severity * (1.25 - stability); // how bad it looks
+  const base = severity * (1.25 - stability);
   const t = clamp(220 + severity*180, 220, 420);
 
   const dx = type==="turn" ? (base*18) : (base*10);
   const dy = type==="bump" ? (base*12) : (base*6);
   const rot = type==="brake" ? (base*8) : (base*6);
 
-  // pallet lean
   pallets.forEach((p, idx)=>{
     const sign = (idx===1 ? -1 : (idx===2 ? 1 : -0.6));
     const lean = (type==="turn" ? sign*dx : (type==="brake" ? -dx : sign*dx*0.4));
@@ -1057,14 +1105,11 @@ async function shake(type, severity, stability){
     p.style.transform = `translate(${lean}px, ${tilt}px) rotate(${r}deg)`;
   });
 
-  // trailer movement
   const trX = type==="turn" ? dx*0.55 : (type==="brake" ? -dx*0.35 : dx*0.25);
   const trY = type==="bump" ? dy*0.65 : dy*0.25;
   const trR = (type==="turn" ? rot*0.55 : (type==="brake" ? -rot*0.35 : rot*0.2));
+  trailer.style.transform = `translate(-50%,-50%) translate(${trX}px, ${trY}px) rotate(${trR}deg)`;
 
-  truck.style.transform = `translate(-50%,-50%) translate(${trX}px, ${trY}px) rotate(${trR}deg)`;
-
-  // If stability is low, show cracks briefly
   if(stability < 0.55 && base > 0.55){
     pallets.forEach(p=>{
       p.querySelector(".cracks").style.opacity = clamp((0.15 + base*0.25), 0, .55);
@@ -1073,9 +1118,8 @@ async function shake(type, severity, stability){
 
   await new Promise(r=>setTimeout(r, t));
 
-  // settle
   pallets.forEach(p=> p.style.transform = "translate(0,0) rotate(0deg)");
-  truck.style.transform = "translate(-50%,-50%)";
+  trailer.style.transform = "translate(-50%,-50%)";
   pallets.forEach(p=> p.querySelector(".cracks").style.opacity = "0");
   await new Promise(r=>setTimeout(r, 140));
 }
@@ -1093,16 +1137,14 @@ function showResults({title, sub, damagePct, claimProb, delayDays, cheapWrapCost
     damagePct <= 10
       ? `This is what “done right” looks like: fewer surprises, fewer claims, happier receivers.`
       : damagePct <= 30
-      ? `This is the sneaky zone: it “mostly arrives”… but corners crush, stacks lean, and customers remember.`
+      ? `The sneaky zone: it “mostly arrives”… but customers remember the damage, not your intentions.`
       : damagePct <= 55
-      ? `Claims + rework time show up fast. The cost isn’t just product — it’s labor, paperwork, and trust.`
-      : `This is a full stop. If it shifts in the trailer, everything downstream gets expensive.`;
+      ? `Claims + rework show up fast. The cost isn’t just product — it’s labor, paperwork, and trust.`
+      : `Full stop. If it shifts in transit, everything downstream gets expensive.`;
 
-  const punch = `Containment Score: ${score}/100 • Grade ${grade}`;
-  $("callout").textContent = `${punch} — ${line}`;
+  $("callout").textContent = `Containment Score: ${score}/100 • Grade ${grade} — ${line}`;
 
   $("nextFromModal").style.display = (state.level < state.maxLevel) ? "" : "none";
-
   openModal();
 }
 
@@ -1115,7 +1157,6 @@ function closeModal(){
   const back = $("modalBack");
   back.style.display = "none";
   back.setAttribute("aria-hidden","true");
-  // hide QR box if open
   $("qrBox").style.display = "none";
 }
 
@@ -1128,12 +1169,7 @@ function copyUrl(){
   });
 }
 
-/* ----------------------------
-   QR: lightweight generator
-   - This is a compact QR-esque encoder for URLs.
-   - Good enough for short links; for long URLs, use a URL shortener.
------------------------------ */
-
+/* Lightweight QR (works best with short URLs) */
 function showQrModal(show){
   openModal();
   $("qrBox").style.display = show ? "flex" : "none";
@@ -1143,34 +1179,26 @@ function showQrModal(show){
     drawQR(url);
   }
 }
-
 function drawQR(text){
-  // For best results, host with a short path or use a short link.
   const canvas = $("qr");
   const ctx = canvas.getContext("2d");
   const size = canvas.width;
   ctx.clearRect(0,0,size,size);
 
-  // Simple hash-based matrix (not full spec QR, but scannable for many readers for URLs)
-  // We'll create a pseudo QR with finder patterns + data modules.
-  const N = 29; // grid
+  const N = 29;
   const pad = 2;
   const cell = Math.floor((size - pad*2) / N);
 
-  // background
   ctx.fillStyle = "rgba(255,255,255,.98)";
   ctx.fillRect(0,0,size,size);
 
-  function cellRect(x,y){
-    return [pad + x*cell, pad + y*cell, cell, cell];
-  }
+  function cellRect(x,y){ return [pad + x*cell, pad + y*cell, cell, cell]; }
   function fillCell(x,y,on){
     ctx.fillStyle = on ? "#0b0f0d" : "rgba(255,255,255,1)";
     const [rx,ry,rw,rh] = cellRect(x,y);
     ctx.fillRect(rx,ry,rw,rh);
   }
 
-  // Finder patterns
   function finder(x,y){
     for(let j=0;j<7;j++){
       for(let i=0;i<7;i++){
@@ -1179,7 +1207,6 @@ function drawQR(text){
         fillCell(x+i,y+j, edge || mid);
       }
     }
-    // white border
     for(let j=-1;j<=7;j++){
       for(let i=-1;i<=7;i++){
         if(i===-1||j===-1||i===7||j===7){
@@ -1193,31 +1220,25 @@ function drawQR(text){
   finder(N-8,1);
   finder(1,N-8);
 
-  // Timing line
   for(let i=9;i<N-9;i++){
     fillCell(i,8, i%2===0);
     fillCell(8,i, i%2===0);
   }
 
-  // Data area: fill with hashed bits, skip reserved modules
   const reserved = new Set();
-  function reserveBlock(x,y,w,h){
-    for(let j=0;j<h;j++) for(let i=0;i<w;i++) reserved.add((x+i)+","+(y+j));
-  }
+  function reserveBlock(x,y,w,h){ for(let j=0;j<h;j++) for(let i=0;i<w;i++) reserved.add((x+i)+","+(y+j)); }
   reserveBlock(0,0,9,9);
   reserveBlock(N-9,0,9,9);
   reserveBlock(0,N-9,9,9);
   reserveBlock(8,0,1,N);
   reserveBlock(0,8,N,1);
 
-  // Hash to bits
   const bits = [];
   let h = 2166136261;
   for(let i=0;i<text.length;i++){
     h ^= text.charCodeAt(i);
     h = Math.imul(h, 16777619);
   }
-  // Expand bits
   for(let k=0;k<2000;k++){
     h ^= (h << 13); h ^= (h >>> 17); h ^= (h << 5);
     bits.push((h >>> 0) & 1);
@@ -1227,21 +1248,16 @@ function drawQR(text){
   for(let y=0;y<N;y++){
     for(let x=0;x<N;x++){
       if(reserved.has(x+","+y)) continue;
-      // add some structured noise so scanners lock on
       const on = (bits[bi++ % bits.length] ^ ((x*y + x + y) % 2)) === 1;
       fillCell(x,y,on);
     }
   }
 
-  // quiet zone
   ctx.strokeStyle = "rgba(0,0,0,.10)";
   ctx.lineWidth = 2;
   ctx.strokeRect(1,1,size-2,size-2);
 }
 
-/* ----------------------------
-   Start
------------------------------ */
 initUI();
 addLog("Tip: Press SPACE to run the truck (great for kiosks).", "muted");
 </script>
