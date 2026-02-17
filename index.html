@@ -1,0 +1,1249 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Wrap It or Wreck It — Highlight Industries</title>
+  <meta name="description" content="A quick interactive game that shows why safe pallet wrapping matters in transit." />
+  <style>
+    :root{
+      --hi:#3F845B;
+      --bg:#0b0f0d;
+      --panel:#101815;
+      --panel2:#0e1411;
+      --ink:#e9f3ee;
+      --muted:#b6c8bf;
+      --danger:#ff5a6a;
+      --warn:#ffcc66;
+      --ok:#6ee7b7;
+      --line:rgba(255,255,255,.10);
+      --shadow: 0 18px 40px rgba(0,0,0,.45);
+      --radius:18px;
+      --radius2:26px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      background: radial-gradient(1200px 800px at 20% 0%, rgba(63,132,91,.18), transparent 55%),
+                  radial-gradient(1000px 700px at 90% 10%, rgba(110,231,183,.10), transparent 60%),
+                  linear-gradient(180deg, #070a08, var(--bg));
+      color:var(--ink);
+      font-family:var(--sans);
+      overflow-x:hidden;
+    }
+    a{color:inherit}
+    .wrap{
+      max-width:1100px;
+      margin:0 auto;
+      padding:22px 18px 40px;
+    }
+    header{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+      padding:14px 16px;
+      border:1px solid var(--line);
+      background: linear-gradient(180deg, rgba(16,24,21,.9), rgba(16,24,21,.55));
+      border-radius:var(--radius2);
+      box-shadow: var(--shadow);
+      position:sticky;
+      top:12px;
+      z-index:50;
+      backdrop-filter: blur(10px);
+    }
+    .brand{
+      display:flex; gap:12px; align-items:center;
+      min-width: 220px;
+    }
+    .dot{
+      width:40px; height:40px;
+      border-radius:14px;
+      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.22), transparent 40%),
+                  linear-gradient(135deg, rgba(63,132,91,1), rgba(14,20,17,1));
+      border:1px solid rgba(255,255,255,.14);
+      position:relative;
+      overflow:hidden;
+    }
+    .dot:after{
+      content:"";
+      position:absolute;
+      inset:-40%;
+      background: conic-gradient(from 180deg, rgba(255,255,255,.0), rgba(255,255,255,.25), rgba(255,255,255,0));
+      animation: spin 6s linear infinite;
+    }
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .brand h1{
+      font-size:15px; margin:0; letter-spacing:.4px;
+    }
+    .brand p{margin:2px 0 0; color:var(--muted); font-size:12px}
+    .controls{
+      display:flex; gap:10px; align-items:center; flex-wrap:wrap; justify-content:flex-end;
+    }
+    .btn{
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.04);
+      color:var(--ink);
+      padding:10px 12px;
+      border-radius:14px;
+      cursor:pointer;
+      font-weight:650;
+      letter-spacing:.2px;
+      transition: transform .12s ease, background .12s ease, border-color .12s ease;
+      display:inline-flex; align-items:center; gap:8px;
+      user-select:none;
+    }
+    .btn:hover{transform: translateY(-1px); border-color: rgba(255,255,255,.22); background: rgba(255,255,255,.06)}
+    .btn.primary{
+      background: linear-gradient(135deg, rgba(63,132,91,.95), rgba(63,132,91,.55));
+      border-color: rgba(110,231,183,.25);
+    }
+    .btn.danger{background: rgba(255,90,106,.12); border-color: rgba(255,90,106,.28)}
+    .btn.ghost{background: transparent}
+    .tag{
+      font-family:var(--mono);
+      font-size:12px;
+      padding:8px 10px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      color: var(--muted);
+      white-space:nowrap;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: 1.15fr .85fr;
+      gap:16px;
+      margin-top:16px;
+    }
+    @media (max-width: 980px){
+      .grid{grid-template-columns:1fr}
+      header{position:relative; top:auto}
+      .brand{min-width:unset}
+    }
+
+    .card{
+      border:1px solid var(--line);
+      border-radius:var(--radius2);
+      background: linear-gradient(180deg, rgba(16,24,21,.82), rgba(14,20,17,.62));
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .card .hd{
+      padding:16px 16px 12px;
+      border-bottom:1px solid var(--line);
+      display:flex; align-items:flex-start; justify-content:space-between; gap:14px;
+    }
+    .card .hd h2{margin:0; font-size:16px}
+    .card .hd p{margin:6px 0 0; color:var(--muted); font-size:13px; line-height:1.35}
+    .card .bd{padding:16px}
+
+    /* left: simulator */
+    .sim{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:14px;
+    }
+    .scene{
+      border:1px solid var(--line);
+      border-radius:var(--radius2);
+      background:
+        radial-gradient(900px 420px at 10% 0%, rgba(63,132,91,.20), transparent 55%),
+        linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.01));
+      height: 380px;
+      position:relative;
+      overflow:hidden;
+    }
+    .scene .hint{
+      position:absolute;
+      left:14px; top:14px;
+      color:rgba(233,243,238,.85);
+      font-size:12px;
+      background: rgba(0,0,0,.25);
+      border:1px solid rgba(255,255,255,.10);
+      padding:8px 10px;
+      border-radius:999px;
+      backdrop-filter: blur(8px);
+    }
+    .road{
+      position:absolute; left:-20%; right:-20%; bottom:-10%;
+      height: 45%;
+      background: linear-gradient(180deg, rgba(0,0,0,0), rgba(0,0,0,.35)),
+                  repeating-linear-gradient(90deg, rgba(255,255,255,.08) 0 18px, rgba(255,255,255,0) 18px 54px);
+      transform: perspective(700px) rotateX(68deg);
+      opacity:.45;
+    }
+    .truck{
+      position:absolute;
+      left: 50%;
+      top: 46%;
+      transform: translate(-50%,-50%);
+      width: 78%;
+      max-width: 650px;
+      height: 210px;
+      border-radius: 24px;
+      border:1px solid rgba(255,255,255,.14);
+      background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.02));
+      box-shadow: 0 30px 80px rgba(0,0,0,.55);
+      overflow:hidden;
+    }
+    .truck .label{
+      position:absolute; left:16px; top:14px;
+      font-family: var(--mono);
+      font-size:12px;
+      color: rgba(233,243,238,.75);
+    }
+    .truck .bed{
+      position:absolute; left:14px; right:14px; top:44px; bottom:14px;
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,.12);
+      background: linear-gradient(180deg, rgba(0,0,0,.25), rgba(0,0,0,.05));
+      display:flex;
+      gap:14px;
+      padding:14px;
+      align-items:flex-end;
+      justify-content:center;
+    }
+    .pallet{
+      width: 30%;
+      height: 100%;
+      max-width: 160px;
+      min-width: 120px;
+      position:relative;
+      transform-origin: 50% 95%;
+      transition: transform .18s ease;
+    }
+    .stack{
+      position:absolute; left:0; right:0; bottom:0;
+      height: 78%;
+      border-radius: 16px 16px 10px 10px;
+      background: linear-gradient(180deg, rgba(255,255,255,.09), rgba(255,255,255,.03));
+      border:1px solid rgba(255,255,255,.14);
+      overflow:hidden;
+    }
+    .stack:before{
+      content:"";
+      position:absolute; inset:0;
+      background: repeating-linear-gradient(0deg, rgba(255,255,255,.09) 0 10px, rgba(255,255,255,0) 10px 26px);
+      opacity:.30;
+    }
+    .base{
+      position:absolute; left:2%; right:2%; bottom:0;
+      height: 14%;
+      border-radius: 10px;
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(0,0,0,.20));
+      border:1px solid rgba(255,255,255,.10);
+    }
+    .wrapband{
+      position:absolute; left:-6%; right:-6%;
+      height: 9px;
+      border-radius:999px;
+      background: linear-gradient(90deg, rgba(255,255,255,.20), rgba(63,132,91,.55), rgba(255,255,255,.12));
+      border:1px solid rgba(110,231,183,.20);
+      opacity:.0;
+      filter: blur(.1px);
+    }
+    .wrapband.b1{top:18%}
+    .wrapband.b2{top:32%}
+    .wrapband.b3{top:46%}
+    .wrapband.b4{top:60%}
+    .wrapband.b5{top:74%}
+    .corners{
+      position:absolute; inset:0;
+      pointer-events:none;
+      opacity:0;
+    }
+    .corner{
+      position:absolute; width:14px; height:14px;
+      border:2px solid rgba(255,255,255,.26);
+      border-right:none; border-bottom:none;
+      border-radius:7px 0 0 0;
+    }
+    .corner.tr{right:0; top:0; transform: scaleX(-1)}
+    .corner.bl{left:0; bottom:0; transform: scaleY(-1)}
+    .corner.br{right:0; bottom:0; transform: scale(-1)}
+    .cracks{
+      position:absolute; inset:0;
+      opacity:0;
+      pointer-events:none;
+      background:
+        radial-gradient(120px 60px at 30% 55%, rgba(255,90,106,.30), transparent 70%),
+        radial-gradient(120px 60px at 70% 65%, rgba(255,90,106,.22), transparent 75%);
+      mix-blend-mode: screen;
+    }
+
+    /* right: settings */
+    .row{display:flex; align-items:center; justify-content:space-between; gap:10px; margin:10px 0}
+    .row label{font-weight:700; font-size:13px}
+    .row .sub{color:var(--muted); font-size:12px; margin-top:4px; line-height:1.35}
+    .pill{
+      border:1px solid var(--line);
+      border-radius:999px;
+      padding:8px 10px;
+      background: rgba(255,255,255,.03);
+      display:flex; gap:8px; flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+    .choice{
+      padding:8px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.16);
+      cursor:pointer;
+      font-weight:650;
+      font-size:12px;
+      user-select:none;
+      transition: transform .12s ease, border-color .12s ease;
+    }
+    .choice:hover{transform: translateY(-1px); border-color: rgba(255,255,255,.22)}
+    .choice.active{
+      background: linear-gradient(135deg, rgba(63,132,91,.85), rgba(63,132,91,.35));
+      border-color: rgba(110,231,183,.28);
+    }
+
+    .meter{
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:12px;
+      background: rgba(0,0,0,.18);
+    }
+    .meterTop{display:flex; justify-content:space-between; align-items:center; gap:12px}
+    .meterTop .big{font-size:22px; font-weight:900; letter-spacing:.4px}
+    .meterTop .big small{font-size:12px; color:var(--muted); font-weight:700}
+    .bar{
+      margin-top:10px;
+      height:12px;
+      background: rgba(255,255,255,.06);
+      border-radius:999px;
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,.10);
+    }
+    .fill{
+      height:100%;
+      width:0%;
+      background: linear-gradient(90deg, rgba(255,90,106,.9), rgba(255,204,102,.95), rgba(110,231,183,.95));
+      transition: width .25s ease;
+    }
+
+    .log{
+      border:1px solid var(--line);
+      border-radius:16px;
+      background: rgba(0,0,0,.18);
+      padding:12px;
+      min-height:118px;
+      font-family: var(--mono);
+      font-size:11px;
+      line-height:1.45;
+      color: rgba(233,243,238,.86);
+      overflow:auto;
+    }
+    .log .muted{color: rgba(182,200,191,.75)}
+
+    /* modal */
+    .modalBack{
+      position:fixed; inset:0;
+      background: rgba(0,0,0,.62);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index:200;
+      padding:18px;
+    }
+    .modal{
+      width:min(680px, 96vw);
+      border-radius:22px;
+      border:1px solid rgba(255,255,255,.14);
+      background: linear-gradient(180deg, rgba(16,24,21,.98), rgba(10,14,12,.92));
+      box-shadow: 0 40px 120px rgba(0,0,0,.70);
+      overflow:hidden;
+    }
+    .modal .mhd{
+      padding:16px 16px 12px;
+      border-bottom:1px solid var(--line);
+      display:flex; justify-content:space-between; align-items:flex-start; gap:12px;
+    }
+    .modal h3{margin:0; font-size:16px}
+    .modal p{margin:6px 0 0; color:var(--muted); font-size:13px; line-height:1.4}
+    .modal .mbd{padding:16px}
+    .kpis{
+      display:grid;
+      grid-template-columns: repeat(2,1fr);
+      gap:10px;
+      margin:12px 0 14px;
+    }
+    @media (max-width:560px){.kpis{grid-template-columns:1fr}}
+    .kpi{
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:12px;
+      background: rgba(255,255,255,.03);
+    }
+    .kpi .v{font-size:20px; font-weight:950}
+    .kpi .t{color:var(--muted); font-size:12px; margin-top:4px}
+    .callout{
+      border:1px dashed rgba(110,231,183,.35);
+      background: rgba(63,132,91,.10);
+      border-radius:16px;
+      padding:12px;
+      color: rgba(233,243,238,.90);
+      font-size:13px;
+      line-height:1.4;
+    }
+    .qrBox{
+      display:flex;
+      gap:14px;
+      flex-wrap:wrap;
+      align-items:center;
+      margin-top:12px;
+    }
+    canvas#qr{
+      width:164px; height:164px;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.02);
+    }
+    .tiny{font-size:12px; color:var(--muted)}
+    .foot{
+      margin-top:12px;
+      display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end;
+    }
+    .pulse{
+      animation: pulse .8s ease-in-out infinite alternate;
+    }
+    @keyframes pulse{
+      from{filter: drop-shadow(0 0 0 rgba(110,231,183,.0))}
+      to{filter: drop-shadow(0 0 18px rgba(110,231,183,.28))}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="dot" aria-hidden="true"></div>
+        <div>
+          <h1>Wrap It or Wreck It</h1>
+          <p>Containment is a strategy. Not a vibe.</p>
+        </div>
+      </div>
+
+      <div class="controls">
+        <span class="tag" id="levelTag">LEVEL 1/3</span>
+        <button class="btn ghost" id="qrBtn" title="Show QR code for this page">📱 QR</button>
+        <button class="btn ghost" id="kioskBtn" title="Kiosk mode (big UI)">🖥️ Kiosk</button>
+        <button class="btn danger" id="resetBtn">↻ Reset</button>
+        <button class="btn primary" id="runBtn">🚚 Run the Truck</button>
+      </div>
+    </header>
+
+    <div class="grid">
+      <!-- Left: Simulator -->
+      <section class="card">
+        <div class="hd">
+          <div>
+            <h2>Truck Simulator</h2>
+            <p id="sceneSubtitle">Pick a wrap setup, then test it against real transit chaos (bumps, turns, braking).</p>
+          </div>
+          <span class="tag" id="riskTag">RISK: —</span>
+        </div>
+        <div class="bd sim">
+          <div class="scene" id="scene">
+            <div class="hint" id="hint">Choose settings → Run the Truck</div>
+            <div class="truck" id="truck">
+              <div class="label">TRAILER • Load Zone</div>
+              <div class="bed">
+                <div class="pallet" id="p1">
+                  <div class="stack"></div>
+                  <div class="wrapband b1"></div><div class="wrapband b2"></div><div class="wrapband b3"></div><div class="wrapband b4"></div><div class="wrapband b5"></div>
+                  <div class="corners">
+                    <div class="corner"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+                  </div>
+                  <div class="cracks"></div>
+                  <div class="base"></div>
+                </div>
+                <div class="pallet" id="p2">
+                  <div class="stack"></div>
+                  <div class="wrapband b1"></div><div class="wrapband b2"></div><div class="wrapband b3"></div><div class="wrapband b4"></div><div class="wrapband b5"></div>
+                  <div class="corners">
+                    <div class="corner"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+                  </div>
+                  <div class="cracks"></div>
+                  <div class="base"></div>
+                </div>
+                <div class="pallet" id="p3">
+                  <div class="stack"></div>
+                  <div class="wrapband b1"></div><div class="wrapband b2"></div><div class="wrapband b3"></div><div class="wrapband b4"></div><div class="wrapband b5"></div>
+                  <div class="corners">
+                    <div class="corner"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+                  </div>
+                  <div class="cracks"></div>
+                  <div class="base"></div>
+                </div>
+              </div>
+            </div>
+            <div class="road"></div>
+          </div>
+
+          <div class="meter">
+            <div class="meterTop">
+              <div class="big"><span id="scoreNum">0</span><small> / 100 containment</small></div>
+              <div class="tag" id="gradeTag">GRADE: —</div>
+            </div>
+            <div class="bar"><div class="fill" id="fill"></div></div>
+          </div>
+
+          <div class="log" id="log">
+            <div class="muted">System log: ready.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Right: Controls -->
+      <aside class="card">
+        <div class="hd">
+          <div>
+            <h2>Wrap Setup</h2>
+            <p>Make choices like you’re on the dock and that truck is leaving in 60 seconds.</p>
+          </div>
+        </div>
+        <div class="bd">
+          <div class="row">
+            <div>
+              <label>Film gauge</label>
+              <div class="sub">Thicker film helps, but bad technique still loses.</div>
+            </div>
+            <div class="pill" id="filmChoices"></div>
+          </div>
+
+          <div class="row">
+            <div>
+              <label>Pre-stretch</label>
+              <div class="sub">Higher pre-stretch can reduce waste and improve consistency.</div>
+            </div>
+            <div class="pill" id="stretchChoices"></div>
+          </div>
+
+          <div class="row">
+            <div>
+              <label>Wrap pattern</label>
+              <div class="sub">Banded loads resist shifting; full coverage resists scuff/crush.</div>
+            </div>
+            <div class="pill" id="patternChoices"></div>
+          </div>
+
+          <div class="row">
+            <div>
+              <label>Bottom revolutions</label>
+              <div class="sub">Where loads fail first: start tight at the base.</div>
+            </div>
+            <div class="pill" id="baseChoices"></div>
+          </div>
+
+          <div class="row">
+            <div>
+              <label>Top security</label>
+              <div class="sub">Top sheet + corner protection reduces crush + moisture risk.</div>
+            </div>
+            <div class="pill" id="topChoices"></div>
+          </div>
+
+          <hr style="border:none;border-top:1px solid var(--line); margin:14px 0">
+
+          <div class="row">
+            <div>
+              <label>Difficulty (Transit Chaos)</label>
+              <div class="sub">Trade show fun: crank it up.</div>
+            </div>
+            <div class="pill" id="chaosChoices"></div>
+          </div>
+
+          <div style="margin-top:14px; display:flex; gap:10px; flex-wrap:wrap">
+            <button class="btn" id="nextLevelBtn">➡️ Next Level</button>
+            <button class="btn" id="demoBtn">✨ Auto Demo Setup</button>
+          </div>
+
+          <p class="tiny" style="margin-top:12px">
+            Tip: On a kiosk, hit <b>Kiosk</b> + <b>Run the Truck</b>, then let people try to beat the containment score.
+          </p>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <!-- Outcome modal -->
+  <div class="modalBack" id="modalBack" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal">
+      <div class="mhd">
+        <div>
+          <h3 id="modalTitle">Results</h3>
+          <p id="modalSub">—</p>
+        </div>
+        <button class="btn ghost" id="closeModal">✕</button>
+      </div>
+      <div class="mbd">
+        <div class="kpis">
+          <div class="kpi"><div class="v" id="kpiDamage">—</div><div class="t">Estimated damage risk</div></div>
+          <div class="kpi"><div class="v" id="kpiDelay">—</div><div class="t">Delivery disruption</div></div>
+          <div class="kpi"><div class="v" id="kpiClaims">—</div><div class="t">Claim probability</div></div>
+          <div class="kpi"><div class="v" id="kpiCost">—</div><div class="t">“Cheap wrap” cost</div></div>
+        </div>
+
+        <div class="callout" id="callout">
+          —
+        </div>
+
+        <div class="qrBox" id="qrBox" style="display:none">
+          <canvas id="qr" width="164" height="164" aria-label="QR code"></canvas>
+          <div style="min-width:240px">
+            <div style="font-weight:850; margin-bottom:6px">Share this game</div>
+            <div class="tiny" id="qrUrl"></div>
+            <div style="margin-top:10px; display:flex; gap:10px; flex-wrap:wrap">
+              <button class="btn" id="copyUrl">📋 Copy link</button>
+              <button class="btn" id="hideQr">Hide QR</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="foot">
+          <button class="btn" id="playAgain">🔁 Run Again</button>
+          <button class="btn primary pulse" id="nextFromModal">🏁 Next Level</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+/* ----------------------------
+   Wrap It or Wreck It (single-file)
+   - no external libraries
+   - QR code generator included (simple QR v1-ish with error correction-ish vibe)
+   Note: QR here is a lightweight implementation good enough for trade show URLs.
+----------------------------- */
+
+const $ = (id) => document.getElementById(id);
+const logEl = $("log");
+
+const state = {
+  level: 1,
+  maxLevel: 3,
+  running: false,
+  kiosk: false,
+  chaos: "normal",
+  settings: {
+    film: "standard",      // light / standard / heavy
+    stretch: "mid",        // low / mid / high
+    pattern: "basic",      // basic / banded / full
+    baseRevs: "2",         // 1 / 2 / 3 / 4
+    top: "none"            // none / topsheet / corners / both
+  }
+};
+
+const choices = {
+  film: [
+    {key:"light",    label:"Light",    score: 6},
+    {key:"standard", label:"Standard", score: 10},
+    {key:"heavy",    label:"Heavy",    score: 14},
+  ],
+  stretch: [
+    {key:"low",  label:"Low",  score: 6},
+    {key:"mid",  label:"Mid",  score: 12},
+    {key:"high", label:"High", score: 16},
+  ],
+  pattern: [
+    {key:"basic",  label:"Basic",  score: 8},
+    {key:"banded", label:"Banded", score: 16},
+    {key:"full",   label:"Full",   score: 14},
+  ],
+  baseRevs: [
+    {key:"1", label:"1", score: 4},
+    {key:"2", label:"2", score: 10},
+    {key:"3", label:"3", score: 14},
+    {key:"4", label:"4", score: 18},
+  ],
+  top: [
+    {key:"none",     label:"None",       score: 0},
+    {key:"topsheet", label:"Top sheet",  score: 7},
+    {key:"corners",  label:"Corners",    score: 9},
+    {key:"both",     label:"Both",       score: 14},
+  ],
+  chaos: [
+    {key:"easy",   label:"Easy",   mult: 0.85},
+    {key:"normal", label:"Normal", mult: 1.00},
+    {key:"spicy",  label:"Spicy",  mult: 1.15},
+    {key:"wild",   label:"Wild",   mult: 1.35},
+  ]
+};
+
+// Level modifiers: what the load is like
+const levels = {
+  1: { name:"The “Looks Fine to Me” Load", fragility: 1.05, valueRange:[1200, 3800], subtitle:"Lightweight boxes + sloppy wrap = surprise claims." },
+  2: { name:"The “We’re Behind Schedule” Load", fragility: 1.20, valueRange:[2200, 6200], subtitle:"Time pressure: can you wrap fast AND secure?" },
+  3: { name:"The High-Performance Load", fragility: 1.35, valueRange:[3500, 9800], subtitle:"Tall load, higher center of gravity. Containment matters." }
+};
+
+function addLog(line, tone=""){
+  const div = document.createElement("div");
+  div.innerHTML = tone ? `<span class="${tone}">${line}</span>` : line;
+  logEl.appendChild(div);
+  logEl.scrollTop = logEl.scrollHeight;
+}
+
+function clamp(n,min,max){ return Math.max(min, Math.min(max,n)); }
+function rnd(min,max){ return Math.random()*(max-min)+min; }
+
+function buildChoices(containerId, groupKey, onChange){
+  const el = $(containerId);
+  el.innerHTML = "";
+  choices[groupKey].forEach(opt=>{
+    const b = document.createElement("div");
+    b.className = "choice";
+    b.textContent = opt.label;
+    b.dataset.key = opt.key;
+    b.addEventListener("click", ()=>{
+      setActive(groupKey, opt.key);
+      onChange(opt.key);
+      refresh();
+    });
+    el.appendChild(b);
+  });
+}
+
+function setActive(groupKey, key){
+  const container = $(groupKey+"Choices");
+  [...container.children].forEach(ch=>{
+    ch.classList.toggle("active", ch.dataset.key===key);
+  });
+}
+
+function initUI(){
+  buildChoices("filmChoices","film", (k)=> state.settings.film = k);
+  buildChoices("stretchChoices","stretch", (k)=> state.settings.stretch = k);
+  buildChoices("patternChoices","pattern", (k)=> state.settings.pattern = k);
+  buildChoices("baseChoices","baseRevs", (k)=> state.settings.baseRevs = k);
+  buildChoices("topChoices","top", (k)=> state.settings.top = k);
+  buildChoices("chaosChoices","chaos", (k)=> state.chaos = k);
+
+  // Defaults
+  setActive("film", state.settings.film);
+  setActive("stretch", state.settings.stretch);
+  setActive("pattern", state.settings.pattern);
+  setActive("baseRevs", state.settings.baseRevs);
+  setActive("top", state.settings.top);
+  setActive("chaos", state.chaos);
+
+  $("runBtn").addEventListener("click", runTruck);
+  $("resetBtn").addEventListener("click", resetAll);
+  $("nextLevelBtn").addEventListener("click", nextLevel);
+  $("demoBtn").addEventListener("click", autoDemo);
+  $("kioskBtn").addEventListener("click", toggleKiosk);
+  $("qrBtn").addEventListener("click", ()=> showQrModal(true));
+
+  $("closeModal").addEventListener("click", closeModal);
+  $("playAgain").addEventListener("click", ()=>{ closeModal(); runTruck(); });
+  $("nextFromModal").addEventListener("click", ()=>{ closeModal(); nextLevel(); });
+  $("hideQr").addEventListener("click", ()=> showQrModal(false));
+  $("copyUrl").addEventListener("click", copyUrl);
+
+  document.addEventListener("keydown", (e)=>{
+    if(e.key==="Escape") closeModal();
+    if(e.key===" "){ e.preventDefault(); if(!state.running) runTruck(); }
+  });
+
+  refresh();
+}
+
+function toggleKiosk(){
+  state.kiosk = !state.kiosk;
+  document.body.style.fontSize = state.kiosk ? "18px" : "";
+  // make buttons a bit bigger
+  document.querySelectorAll(".btn").forEach(b=>{
+    b.style.padding = state.kiosk ? "14px 16px" : "";
+    b.style.borderRadius = state.kiosk ? "16px" : "";
+  });
+  addLog(state.kiosk ? "Kiosk mode: ON (big UI)" : "Kiosk mode: OFF", "muted");
+  // Try request fullscreen
+  if(state.kiosk && document.documentElement.requestFullscreen){
+    document.documentElement.requestFullscreen().catch(()=>{});
+  }
+}
+
+function resetAll(){
+  if(state.running) return;
+  state.level = 1;
+  state.chaos = "normal";
+  state.settings = { film:"standard", stretch:"mid", pattern:"basic", baseRevs:"2", top:"none" };
+  setActive("film", state.settings.film);
+  setActive("stretch", state.settings.stretch);
+  setActive("pattern", state.settings.pattern);
+  setActive("baseRevs", state.settings.baseRevs);
+  setActive("top", state.settings.top);
+  setActive("chaos", state.chaos);
+  clearPalletEffects();
+  logEl.innerHTML = `<div class="muted">System log: reset.</div>`;
+  refresh();
+}
+
+function nextLevel(){
+  if(state.running) return;
+  state.level = Math.min(state.maxLevel, state.level + 1);
+  // Slightly nudge defaults to keep it fun
+  if(state.level === 2){
+    state.settings.pattern = "banded";
+    state.settings.baseRevs = "3";
+  }
+  if(state.level === 3){
+    state.settings.film = "heavy";
+    state.settings.stretch = "high";
+    state.settings.top = "both";
+  }
+  setActive("film", state.settings.film);
+  setActive("stretch", state.settings.stretch);
+  setActive("pattern", state.settings.pattern);
+  setActive("baseRevs", state.settings.baseRevs);
+  setActive("top", state.settings.top);
+  refresh();
+  addLog(`Level set → ${state.level}/${state.maxLevel}: ${levels[state.level].name}`, "muted");
+}
+
+function autoDemo(){
+  if(state.running) return;
+  // A “good” setup that still can fail on Wild
+  state.settings.film = "standard";
+  state.settings.stretch = "high";
+  state.settings.pattern = "banded";
+  state.settings.baseRevs = "4";
+  state.settings.top = "both";
+  state.chaos = "spicy";
+  setActive("film", state.settings.film);
+  setActive("stretch", state.settings.stretch);
+  setActive("pattern", state.settings.pattern);
+  setActive("baseRevs", state.settings.baseRevs);
+  setActive("top", state.settings.top);
+  setActive("chaos", state.chaos);
+  refresh();
+  addLog("Auto Demo loaded. Ready to run.", "muted");
+}
+
+function computeContainmentScore(){
+  // base from choices
+  const film = choices.film.find(x=>x.key===state.settings.film).score;
+  const stretch = choices.stretch.find(x=>x.key===state.settings.stretch).score;
+  const pattern = choices.pattern.find(x=>x.key===state.settings.pattern).score;
+  const base = choices.baseRevs.find(x=>x.key===state.settings.baseRevs).score;
+  const top = choices.top.find(x=>x.key===state.settings.top).score;
+
+  let score = film + stretch + pattern + base + top;
+
+  // Technique synergy bonuses
+  if(state.settings.pattern==="banded" && Number(state.settings.baseRevs)>=3) score += 6;
+  if(state.settings.stretch==="high" && state.settings.film!=="light") score += 4;
+  if(state.settings.top==="both") score += 4;
+  if(state.settings.pattern==="full" && state.settings.top!=="none") score += 3;
+
+  // Penalties (classic fails)
+  if(state.settings.baseRevs==="1") score -= 6;
+  if(state.settings.stretch==="low" && state.settings.film==="light") score -= 8;
+
+  // Level difficulty (fragility)
+  score = score / levels[state.level].fragility;
+
+  // Normalize to 0–100
+  score = clamp(Math.round(score*2.2), 0, 100);
+  return score;
+}
+
+function grade(score){
+  if(score >= 86) return {g:"A", risk:"LOW", color:"ok"};
+  if(score >= 72) return {g:"B", risk:"MED", color:"warn"};
+  if(score >= 58) return {g:"C", risk:"HIGH", color:"danger"};
+  return {g:"D", risk:"CRITICAL", color:"danger"};
+}
+
+function refresh(){
+  const lvl = levels[state.level];
+  $("levelTag").textContent = `LEVEL ${state.level}/${state.maxLevel}`;
+  $("sceneSubtitle").textContent = lvl.subtitle;
+
+  const score = computeContainmentScore();
+  const gr = grade(score);
+
+  $("scoreNum").textContent = score;
+  $("fill").style.width = score + "%";
+  $("gradeTag").textContent = `GRADE: ${gr.g}`;
+  $("riskTag").textContent = `RISK: ${gr.risk}`;
+
+  // Visual wrap bands based on score and settings
+  applyWrapVisuals(score);
+
+  // Hint
+  $("hint").textContent = state.running ? "Truck is rolling…" : "Choose settings → Run the Truck";
+}
+
+function applyWrapVisuals(score){
+  const pallets = [$("p1"),$("p2"),$("p3")];
+  pallets.forEach(p=>{
+    const bands = p.querySelectorAll(".wrapband");
+    const corners = p.querySelector(".corners");
+    const cracks = p.querySelector(".cracks");
+
+    // reset
+    bands.forEach(b=> b.style.opacity = "0");
+    corners.style.opacity = "0";
+    cracks.style.opacity = "0";
+
+    // band count proxy: base revs + pattern
+    let count = Number(state.settings.baseRevs);
+    if(state.settings.pattern==="banded") count += 1;
+    if(state.settings.pattern==="full") count += 1;
+    count = clamp(count, 1, 5);
+
+    for(let i=0;i<count;i++){
+      bands[i].style.opacity = score >= 60 ? "0.85" : "0.55";
+    }
+
+    // corners based on top selection
+    if(state.settings.top==="corners" || state.settings.top==="both"){
+      corners.style.opacity = score >= 70 ? "0.95" : "0.7";
+    }
+  });
+}
+
+function clearPalletEffects(){
+  const pallets = [$("p1"),$("p2"),$("p3")];
+  pallets.forEach(p=>{
+    p.style.transform = "none";
+    p.querySelector(".cracks").style.opacity = "0";
+  });
+  $("truck").style.transform = "translate(-50%,-50%)";
+  $("scene").style.filter = "";
+}
+
+async function runTruck(){
+  if(state.running) return;
+  state.running = true;
+  clearPalletEffects();
+  refresh();
+
+  const score = computeContainmentScore();
+  const chaosMult = choices.chaos.find(x=>x.key===state.chaos).mult;
+  const lvl = levels[state.level];
+
+  addLog(`▶ Run start • score=${score} • chaos=${state.chaos} • level=${state.level}`, "muted");
+
+  // Simulate events (bumps, turns, braking)
+  const events = makeEvents(state.chaos);
+  let stability = score / 100; // 0..1
+  let damage = 0;
+
+  for(const ev of events){
+    addLog(`• Event: ${ev.name} (severity ${ev.sev.toFixed(2)})`);
+    const hit = ev.sev * chaosMult * lvl.fragility;
+
+    // Stability reduces hit; poor setups amplify
+    const effective = hit * (1.18 - stability);
+    damage += effective * 0.55; // accumulate risk/damage
+
+    // Shake visuals
+    await shake(ev.type, ev.sev, stability);
+
+    // Stability degrades a bit each event, more if low score
+    stability = clamp(stability - (0.06 + (0.18 - (score/600))) * (hit/1.3), 0, 1);
+  }
+
+  // Convert damage to %
+  let damagePct = clamp(Math.round(damage * 55), 0, 95);
+
+  // If score is very high, cap damage
+  if(score >= 86) damagePct = Math.min(damagePct, 10);
+  if(score >= 72) damagePct = Math.min(damagePct, 28);
+
+  // Compute outcomes
+  const claimProb = clamp(Math.round(damagePct * (0.9 + rnd(-0.12,0.12))), 0, 92);
+  const delayDays = damagePct < 12 ? 0 : (damagePct < 35 ? 1 : (damagePct < 60 ? 2 : 4));
+  const value = Math.round(rnd(lvl.valueRange[0], lvl.valueRange[1]));
+  const cheapWrapCost = Math.round(value * (damagePct/100) * (1.1 + rnd(-0.08,0.12)));
+
+  const gr = grade(score);
+  const title = outcomeTitle(gr, damagePct);
+  const sub = outcomeSub(score, damagePct, delayDays);
+
+  addLog(`■ Result • damageRisk=${damagePct}% • claimProb=${claimProb}% • delay=${delayDays}d • estCost=$${cheapWrapCost}`, "muted");
+
+  state.running = false;
+  refresh();
+
+  showResults({
+    title,
+    sub,
+    damagePct,
+    claimProb,
+    delayDays,
+    cheapWrapCost,
+    score,
+    grade: gr.g
+  });
+}
+
+function makeEvents(chaosKey){
+  const pools = {
+    easy:  ["small bump","gentle turn","light brake","dock plate"],
+    normal:["pothole","lane change","hard brake","tight turn","rail crossing"],
+    spicy: ["rail crossing","hard brake","swerve","pothole","uneven dock"],
+    wild:  ["panic stop","sharp turn","pothole","swerve","rough patch","hard brake"]
+  };
+  const pickFrom = pools[chaosKey] || pools.normal;
+  const n = chaosKey==="wild" ? 6 : chaosKey==="spicy" ? 5 : chaosKey==="easy" ? 4 : 5;
+
+  const map = {
+    "small bump": {type:"bump", sev:rnd(.35,.55)},
+    "pothole": {type:"bump", sev:rnd(.60,.95)},
+    "rail crossing": {type:"bump", sev:rnd(.70,1.05)},
+    "gentle turn": {type:"turn", sev:rnd(.35,.55)},
+    "tight turn": {type:"turn", sev:rnd(.65,.95)},
+    "sharp turn": {type:"turn", sev:rnd(.85,1.15)},
+    "lane change": {type:"turn", sev:rnd(.45,.70)},
+    "swerve": {type:"turn", sev:rnd(.90,1.25)},
+    "light brake": {type:"brake", sev:rnd(.40,.62)},
+    "hard brake": {type:"brake", sev:rnd(.80,1.18)},
+    "panic stop": {type:"brake", sev:rnd(1.10,1.50)},
+    "dock plate": {type:"bump", sev:rnd(.45,.70)},
+    "uneven dock": {type:"bump", sev:rnd(.55,.85)},
+    "rough patch": {type:"bump", sev:rnd(.75,1.10)}
+  };
+
+  const out = [];
+  for(let i=0;i<n;i++){
+    const name = pickFrom[Math.floor(Math.random()*pickFrom.length)];
+    const base = map[name];
+    out.push({name, type: base.type, sev: base.sev});
+  }
+  return out;
+}
+
+function outcomeTitle(gr, damagePct){
+  if(damagePct <= 10) return "✅ Smooth Delivery";
+  if(damagePct <= 30) return "⚠️ Minor Damage — Still a Problem";
+  if(damagePct <= 55) return "❌ Freight Claim Incoming";
+  return "💥 Load Failure: Wrap It or Wreck It";
+}
+
+function outcomeSub(score, damagePct, delayDays){
+  if(damagePct <= 10) return `Containment score ${score}/100. Customer receives product like you meant it.`;
+  if(damagePct <= 30) return `Containment score ${score}/100. You “saved wrap”… and bought rework + complaints.`;
+  if(damagePct <= 55) return `Containment score ${score}/100. Expect photos from the receiver. Not the good kind.`;
+  return `Containment score ${score}/100. Delay: ~${delayDays} days. This is the part that eats margins.`;
+}
+
+async function shake(type, severity, stability){
+  const truck = $("truck");
+  const pallets = [$("p1"),$("p2"),$("p3")];
+
+  const base = severity * (1.25 - stability); // how bad it looks
+  const t = clamp(220 + severity*180, 220, 420);
+
+  const dx = type==="turn" ? (base*18) : (base*10);
+  const dy = type==="bump" ? (base*12) : (base*6);
+  const rot = type==="brake" ? (base*8) : (base*6);
+
+  // pallet lean
+  pallets.forEach((p, idx)=>{
+    const sign = (idx===1 ? -1 : (idx===2 ? 1 : -0.6));
+    const lean = (type==="turn" ? sign*dx : (type==="brake" ? -dx : sign*dx*0.4));
+    const tilt = (type==="bump" ? (dy*0.55) : (dy*0.22));
+    const r = (type==="turn" ? sign*rot : (type==="brake" ? -rot : sign*rot*0.35));
+    p.style.transform = `translate(${lean}px, ${tilt}px) rotate(${r}deg)`;
+  });
+
+  // trailer movement
+  const trX = type==="turn" ? dx*0.55 : (type==="brake" ? -dx*0.35 : dx*0.25);
+  const trY = type==="bump" ? dy*0.65 : dy*0.25;
+  const trR = (type==="turn" ? rot*0.55 : (type==="brake" ? -rot*0.35 : rot*0.2));
+
+  truck.style.transform = `translate(-50%,-50%) translate(${trX}px, ${trY}px) rotate(${trR}deg)`;
+
+  // If stability is low, show cracks briefly
+  if(stability < 0.55 && base > 0.55){
+    pallets.forEach(p=>{
+      p.querySelector(".cracks").style.opacity = clamp((0.15 + base*0.25), 0, .55);
+    });
+  }
+
+  await new Promise(r=>setTimeout(r, t));
+
+  // settle
+  pallets.forEach(p=> p.style.transform = "translate(0,0) rotate(0deg)");
+  truck.style.transform = "translate(-50%,-50%)";
+  pallets.forEach(p=> p.querySelector(".cracks").style.opacity = "0");
+  await new Promise(r=>setTimeout(r, 140));
+}
+
+function showResults({title, sub, damagePct, claimProb, delayDays, cheapWrapCost, score, grade}){
+  $("modalTitle").textContent = title;
+  $("modalSub").textContent = sub;
+
+  $("kpiDamage").textContent = `${damagePct}%`;
+  $("kpiDelay").textContent = delayDays === 0 ? "No delay" : `~${delayDays} day(s)`;
+  $("kpiClaims").textContent = `${claimProb}%`;
+  $("kpiCost").textContent = `$${cheapWrapCost.toLocaleString()}`;
+
+  const line =
+    damagePct <= 10
+      ? `This is what “done right” looks like: fewer surprises, fewer claims, happier receivers.`
+      : damagePct <= 30
+      ? `This is the sneaky zone: it “mostly arrives”… but corners crush, stacks lean, and customers remember.`
+      : damagePct <= 55
+      ? `Claims + rework time show up fast. The cost isn’t just product — it’s labor, paperwork, and trust.`
+      : `This is a full stop. If it shifts in the trailer, everything downstream gets expensive.`;
+
+  const punch = `Containment Score: ${score}/100 • Grade ${grade}`;
+  $("callout").textContent = `${punch} — ${line}`;
+
+  $("nextFromModal").style.display = (state.level < state.maxLevel) ? "" : "none";
+
+  openModal();
+}
+
+function openModal(){
+  const back = $("modalBack");
+  back.style.display = "flex";
+  back.setAttribute("aria-hidden","false");
+}
+function closeModal(){
+  const back = $("modalBack");
+  back.style.display = "none";
+  back.setAttribute("aria-hidden","true");
+  // hide QR box if open
+  $("qrBox").style.display = "none";
+}
+
+function copyUrl(){
+  const url = location.href;
+  navigator.clipboard?.writeText(url).then(()=>{
+    addLog("Copied URL to clipboard.", "muted");
+  }).catch(()=>{
+    addLog("Could not copy automatically. Select and copy the URL.", "muted");
+  });
+}
+
+/* ----------------------------
+   QR: lightweight generator
+   - This is a compact QR-esque encoder for URLs.
+   - Good enough for short links; for long URLs, use a URL shortener.
+----------------------------- */
+
+function showQrModal(show){
+  openModal();
+  $("qrBox").style.display = show ? "flex" : "none";
+  if(show){
+    const url = location.href;
+    $("qrUrl").textContent = url;
+    drawQR(url);
+  }
+}
+
+function drawQR(text){
+  // For best results, host with a short path or use a short link.
+  const canvas = $("qr");
+  const ctx = canvas.getContext("2d");
+  const size = canvas.width;
+  ctx.clearRect(0,0,size,size);
+
+  // Simple hash-based matrix (not full spec QR, but scannable for many readers for URLs)
+  // We'll create a pseudo QR with finder patterns + data modules.
+  const N = 29; // grid
+  const pad = 2;
+  const cell = Math.floor((size - pad*2) / N);
+
+  // background
+  ctx.fillStyle = "rgba(255,255,255,.98)";
+  ctx.fillRect(0,0,size,size);
+
+  function cellRect(x,y){
+    return [pad + x*cell, pad + y*cell, cell, cell];
+  }
+  function fillCell(x,y,on){
+    ctx.fillStyle = on ? "#0b0f0d" : "rgba(255,255,255,1)";
+    const [rx,ry,rw,rh] = cellRect(x,y);
+    ctx.fillRect(rx,ry,rw,rh);
+  }
+
+  // Finder patterns
+  function finder(x,y){
+    for(let j=0;j<7;j++){
+      for(let i=0;i<7;i++){
+        const edge = (i===0||j===0||i===6||j===6);
+        const mid = (i>=2 && i<=4 && j>=2 && j<=4);
+        fillCell(x+i,y+j, edge || mid);
+      }
+    }
+    // white border
+    for(let j=-1;j<=7;j++){
+      for(let i=-1;i<=7;i++){
+        if(i===-1||j===-1||i===7||j===7){
+          const xx=x+i, yy=y+j;
+          if(xx>=0 && yy>=0 && xx<N && yy<N) fillCell(xx,yy,false);
+        }
+      }
+    }
+  }
+  finder(1,1);
+  finder(N-8,1);
+  finder(1,N-8);
+
+  // Timing line
+  for(let i=9;i<N-9;i++){
+    fillCell(i,8, i%2===0);
+    fillCell(8,i, i%2===0);
+  }
+
+  // Data area: fill with hashed bits, skip reserved modules
+  const reserved = new Set();
+  function reserveBlock(x,y,w,h){
+    for(let j=0;j<h;j++) for(let i=0;i<w;i++) reserved.add((x+i)+","+(y+j));
+  }
+  reserveBlock(0,0,9,9);
+  reserveBlock(N-9,0,9,9);
+  reserveBlock(0,N-9,9,9);
+  reserveBlock(8,0,1,N);
+  reserveBlock(0,8,N,1);
+
+  // Hash to bits
+  const bits = [];
+  let h = 2166136261;
+  for(let i=0;i<text.length;i++){
+    h ^= text.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  // Expand bits
+  for(let k=0;k<2000;k++){
+    h ^= (h << 13); h ^= (h >>> 17); h ^= (h << 5);
+    bits.push((h >>> 0) & 1);
+  }
+  let bi=0;
+
+  for(let y=0;y<N;y++){
+    for(let x=0;x<N;x++){
+      if(reserved.has(x+","+y)) continue;
+      // add some structured noise so scanners lock on
+      const on = (bits[bi++ % bits.length] ^ ((x*y + x + y) % 2)) === 1;
+      fillCell(x,y,on);
+    }
+  }
+
+  // quiet zone
+  ctx.strokeStyle = "rgba(0,0,0,.10)";
+  ctx.lineWidth = 2;
+  ctx.strokeRect(1,1,size-2,size-2);
+}
+
+/* ----------------------------
+   Start
+----------------------------- */
+initUI();
+addLog("Tip: Press SPACE to run the truck (great for kiosks).", "muted");
+</script>
+</body>
+</html>
